@@ -8,6 +8,8 @@ import (
 	"os/exec"
 	"regexp"
 	"strings"
+
+	"github.com/hashicorp/go-version"
 )
 
 type Vagrant_2_2_Driver struct {
@@ -79,6 +81,18 @@ func (d *Vagrant_2_2_Driver) Verify() error {
 	if err != nil {
 		return fmt.Errorf("Can't find Vagrant binary.")
 	}
+
+	constraints, err := version.NewConstraint(">= 2.0.2")
+	vers, err := d.Version()
+	v, err := version.NewVersion(vers)
+	if err != nil {
+		return fmt.Errorf("Error figuring out Vagrant version.")
+	}
+
+	if !constraints.Check(v) {
+		return fmt.Errorf("installed Vagrant version must be >=2.0.2")
+	}
+
 	return nil
 }
 

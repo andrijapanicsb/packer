@@ -7,6 +7,17 @@ Packer will not install vagrant, nor will it install the underlying
 virtualization platforms or extra providers; We expect when you run this
 builder that you have already installed what you need.
 
+By default, this builder will initialize a new Vagrant workspace, launch your
+box from that workspace, provision it, call `vagrant package` to package it
+into a new box, and then destroy the original box. Please note that vagrant
+will _not_ remove the box file from your system (we don't call
+`vagrant box remove`.
+
+You can change the behavior so that the builder doesn't destroy the box by
+setting the `teardown_method` option. You can change the behavior so the builder
+doesn't package it (not all provisioners support the `vagrant package` command)
+by setting the `skip package` option.
+
 Required:
 
 -    `source_box` (string) - URL of the vagrant box to use, or the name of the
