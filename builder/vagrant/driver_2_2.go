@@ -12,6 +12,8 @@ import (
 	"github.com/hashicorp/go-version"
 )
 
+const VAGRANT_MIN_VERSION = ">= 2.0.2"
+
 type Vagrant_2_2_Driver struct {
 	vagrantBinary string
 }
@@ -82,7 +84,7 @@ func (d *Vagrant_2_2_Driver) Verify() error {
 		return fmt.Errorf("Can't find Vagrant binary.")
 	}
 
-	constraints, err := version.NewConstraint(">= 2.0.2")
+	constraints, err := version.NewConstraint(VAGRANT_MIN_VERSION)
 	vers, err := d.Version()
 	v, err := version.NewVersion(vers)
 	if err != nil {
@@ -152,7 +154,7 @@ func (d *Vagrant_2_2_Driver) SSHConfig(id string) (*VagrantSSHConfig, error) {
 
 // Version reads the version of VirtualBox that is installed.
 func (d *Vagrant_2_2_Driver) Version() (string, error) {
-	stdoutString, _, err := d.vagrantCmd([]string{"version"}...)
+	stdoutString, _, err := d.vagrantCmd([]string{"--version"}...)
 	// Example stdout:
 
 	// 	Installed Version: 2.2.3

@@ -2,11 +2,8 @@ package vagrant
 
 import (
 	"fmt"
-	"os"
 	"os/exec"
-	"path/filepath"
 	"runtime"
-	"strings"
 )
 
 // A driver is able to talk to Vagrant and perform certain
@@ -66,15 +63,4 @@ func NewDriver() (VagrantDriver, error) {
 	}
 
 	return driver, nil
-}
-
-func findVBoxManageWindows(paths string) string {
-	for _, path := range strings.Split(paths, ";") {
-		path = filepath.Join(path, "VBoxManage.exe")
-		if _, err := os.Stat(path); err == nil {
-			return path
-		}
-	}
-
-	return ""
 }

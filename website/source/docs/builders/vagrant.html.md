@@ -1,7 +1,6 @@
 The Vagrant builder is intended for building new boxes from already-existing
 boxes. Your source should be a URL or path to a .box file or a Vagrant Cloud
-box name such as `hashicorp/precise64`. This builder is not currently intended
-to work with an already-set-up Vagrant environment.
+box name such as `hashicorp/precise64`.
 
 Packer will not install vagrant, nor will it install the underlying
 virtualization platforms or extra providers; We expect when you run this
@@ -11,21 +10,23 @@ By default, this builder will initialize a new Vagrant workspace, launch your
 box from that workspace, provision it, call `vagrant package` to package it
 into a new box, and then destroy the original box. Please note that vagrant
 will _not_ remove the box file from your system (we don't call
-`vagrant box remove`.
+`vagrant box remove`).
 
 You can change the behavior so that the builder doesn't destroy the box by
 setting the `teardown_method` option. You can change the behavior so the builder
 doesn't package it (not all provisioners support the `vagrant package` command)
-by setting the `skip package` option.
+by setting the `skip package` option. You can also change the behavior so that
+rather than inititalizing a new Vagrant workspace, you use an already defined
+one, by using `global_id` instead of `source_box`.
 
 Required:
 
 -    `source_box` (string) - URL of the vagrant box to use, or the name of the
     vagrant box. `hashicorp/precise64`, `./mylocalbox.box` and
-    `https://boxes.company.com/my-company.box` are all valid source boxes. If your
+    `https://example.com/my-box.box` are all valid source boxes. If your
     source is a .box file, whether locally or from a URL like the latter example
     above, you will also need to provide a `box_name`. This option is required,
-    unless you set `global_id` You may only set one or the other, not both.
+    unless you set `global_id`. You may only set one or the other, not both.
 
     or
 
