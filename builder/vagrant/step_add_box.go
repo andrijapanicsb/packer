@@ -23,16 +23,8 @@ type StepAddBox struct {
 	GlobalID     string
 }
 
-func (s *StepAddBox) Run(_ context.Context, state multistep.StateBag) multistep.StepAction {
-	driver := state.Get("driver").(VagrantDriver)
-	ui := state.Get("ui").(packer.Ui)
+func (s *StepAddBox) generateAddArgs() []string {
 
-	if s.GlobalID != "" {
-		ui.Say("Using a global-id; skipping Vagrant add command...")
-		return multistep.ActionContinue
-	}
-
-	ui.Say("Adding box using vagrant box add..")
 	addArgs := []string{}
 
 	if strings.HasSuffix(s.SourceBox, ".box") {
@@ -72,6 +64,21 @@ func (s *StepAddBox) Run(_ context.Context, state multistep.StateBag) multistep.
 	if s.Provider != "" {
 		addArgs = append(addArgs, "--provider", s.Provider)
 	}
+
+	return addArgs
+}
+
+func (s *StepAddBox) Run(_ context.Context, state multistep.StateBag) multistep.StepAction {
+	driver := state.Get("driver").(VagrantDriver)
+	ui := state.Get("ui").(packer.Ui)
+
+	if s.GlobalID != "" {
+		ui.Say("Using a global-id; skipping Vagrant add command...")
+		return multistep.ActionContinue
+	}
+
+	ui.Say("Adding box using vagrant box add..")
+	addArgs := s.generateAddArgs()
 
 	log.Printf("[vagrant] Calling box add with following args %s", strings.Join(addArgs, " "))
 	// Call vagrant using prepared arguments
