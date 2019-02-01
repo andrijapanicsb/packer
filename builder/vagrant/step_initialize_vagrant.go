@@ -74,18 +74,8 @@ func (s *StepInitializeVagrant) createInitializeCommand() (string, error) {
 
 	return abspath, nil
 }
-func (s *StepInitializeVagrant) Run(_ context.Context, state multistep.StateBag) multistep.StepAction {
-	driver := state.Get("driver").(VagrantDriver)
-	ui := state.Get("ui").(packer.Ui)
 
-	// Skip the initialize step if we're trying to launch from a global ID.
-	if s.GlobalID != "" {
-		ui.Say("Using a global-id; skipping Vagrant init in this directory...")
-		return multistep.ActionContinue
-	}
-
-	ui.Say("Initializing Vagrant in build directory...")
-
+func (s *StepInitializeVagrant) prepInitArgs() ([]string, error) {
 	// Prepare arguments
 	initArgs := []string{}
 
@@ -105,11 +95,31 @@ func (s *StepInitializeVagrant) Run(_ context.Context, state multistep.StateBag)
 
 	tplPath, err := s.createInitializeCommand()
 	if err != nil {
-		state.Put("error", err)
-		return multistep.ActionHalt
+		return initArgs, err
 	}
 
 	initArgs = append(initArgs, "--template", tplPath)
+
+	return initArgs, nil
+}
+
+func (s *StepInitializeVagrant) Run(_ context.Context, state multistep.StateBag) multistep.StepAction {
+	driver := state.Get("driver").(VagrantDriver)
+	ui := state.Get("ui").(packer.Ui)
+
+	// Skip the initialize step if we're trying to launch from a global ID.
+	if s.GlobalID != "" {
+		ui.Say("Using a global-id; skipping Vagrant init in this directory...")
+		return multistep.ActionContinue
+	}
+
+	ui.Say("Initializing Vagrant in build directory...")
+
+	initArgs, err := s.prepInitArgs()
+	if err != nil {
+		state.Put("error", err)
+		return multistep.ActionHalt
+	}
 
 	os.Chdir(s.OutputDir)
 	// Call vagrant using prepared arguments
