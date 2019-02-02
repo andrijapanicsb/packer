@@ -129,7 +129,7 @@ func (b *Builder) Prepare(raws ...interface{}) ([]string, error) {
 			}
 			fileOK := common.FileExistsLocally(b.config.SourceBox)
 			if !fileOK {
-				packer.MultiErrorAppend(errs,
+				errs = packer.MultiErrorAppend(errs,
 					fmt.Errorf("Source file '%s' needs to exist at time of config validation!", b.config.SourceBox))
 			}
 		}
